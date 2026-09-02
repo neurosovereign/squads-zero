@@ -10,3 +10,17 @@
 |`ee306a272a1c6bcc67db366b1c8308cff810f659`|`1e1076e882bb166f64bc2ef85462a938f1f20a6aae0aa1af6de97be38dae66c9`|
 |`49a8ee11770155083f1d0b9ae8970bd9bb1e9116`|`b8246242f0c8c0dc5a313523dd411a97bd23878c8a146ecdde8af153f8691550`|
 |`46ac4ebc2d965dcc053088273f51658c6feea6d8`|`7d3cc5ebe3ef2684760abe7cda0cb9a78cb0c759332f3859f6c9564084e808be`|
+
+---
+
+**Local divergence notice.** This fork carries modifications on top of the
+upstream release: a custom Ledger wallet adapter
+(`src/lib/ledgerSolanaAdapter.ts`, built on Ledger's official libraries,
+derivation `44'/501'/0'`), a spending-limits page
+(`src/lib/spendingLimits.ts`, `/limits`), a staking page (`src/lib/staking.ts`,
+`/stake`), a members page (`src/lib/members.ts`, `/members`), and a JitoSOL
+deposit page (`src/lib/jitoPool.ts`, `/jito` — direct SOL deposit into the
+Jito stake pool via the SPL stake-pool program's `DepositSol` instruction,
+wrapped in a vault-transaction proposal). The upstream hashes above therefore
+**do not apply** to builds from this tree; verify by rebuilding from source
+and diffing `dist/`.
