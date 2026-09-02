@@ -11,6 +11,10 @@ import CreatePage from './routes/create';
 import SettingsPage from './routes/settings';
 import TransactionsPage from './routes/transactions';
 import ProgramsPage from './routes/programs';
+import LimitsPage from './routes/limits';
+import StakePage from './routes/stake';
+import MembersPage from './routes/members';
+import JitoPage from './routes/jito';
 import { Routes, Route, HashRouter } from 'react-router-dom';
 
 import './styles/global.css'; // Load Tailwind styles
@@ -37,6 +41,10 @@ const App = () => {
                     <Route path="/settings" element={<SettingsPage />} />
                     <Route path="/transactions" element={<TransactionsPage />} />
                     <Route path="/programs" element={<ProgramsPage />} />
+                    <Route path="/limits" element={<LimitsPage />} />
+                    <Route path="/stake" element={<StakePage />} />
+                    <Route path="/members" element={<MembersPage />} />
+                    <Route path="/jito" element={<JitoPage />} />
                     <Route path="*" element={<p>404 - Not Found</p>} /> {/* Catch-all route */}
                   </Routes>
                 </Suspense>
