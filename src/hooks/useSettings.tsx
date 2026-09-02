@@ -2,7 +2,13 @@ import * as multisig from '@sqds/multisig';
 // top level
 import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 
-const DEFAULT_RPC_URL = 'https://api.mainnet-beta.solana.com'; // Default fallback
+// Same-origin RPC proxy default: the public mainnet RPC rejects requests that
+// carry a browser Origin header (403), so the client talks to /rpc on its own
+// origin, which caddy proxies upstream with Origin stripped.
+export const DEFAULT_RPC_URL =
+  typeof window !== 'undefined' && window.location?.origin
+    ? `${window.location.origin}/rpc`
+    : 'https://api.mainnet-beta.solana.com';
 
 const getRpcUrl = () => {
   if (typeof document !== 'undefined') {

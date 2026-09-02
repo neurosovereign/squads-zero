@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
-import { useRpcUrl, useProgramId } from './useSettings';
+import { Connection, PublicKey } from '@solana/web3.js';
+import { useRpcUrl, useProgramId, DEFAULT_RPC_URL } from './useSettings';
 import { useVaultIndex } from './useVaultIndex';
 import { useMultisigAddress } from './useMultisigAddress';
 import * as multisig from '@sqds/multisig';
@@ -12,8 +12,8 @@ export const useMultisigData = () => {
   const { multisigAddress } = useMultisigAddress();
   const { vaultIndex } = useVaultIndex();
 
-  // Ensure we have a valid RPC URL (fallback to mainnet-beta)
-  const effectiveRpcUrl = rpcUrl || clusterApiUrl('mainnet-beta');
+  // Ensure we have a valid RPC URL (fallback to the same-origin proxy default)
+  const effectiveRpcUrl = rpcUrl || DEFAULT_RPC_URL;
   const connection = useMemo(() => new Connection(effectiveRpcUrl, 'confirmed'), [effectiveRpcUrl]);
 
   // Compute programId safely
