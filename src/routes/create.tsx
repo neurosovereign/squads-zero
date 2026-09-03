@@ -8,8 +8,8 @@ export default function CreateSquad() {
     <ErrorBoundary>
       <div className="">
         <div className="mb-4 flex-col space-y-1">
-          <h1 className="text-3xl font-bold">Create a Squad</h1>
-          <h3 className="text-base text-slate-500">
+          <h1 className="font-display text-2xl font-semibold tracking-tight">Create a Squad</h1>
+          <h3 className="text-sm text-muted-foreground">
             Create a Squad and set it as your default account.
           </h3>
         </div>

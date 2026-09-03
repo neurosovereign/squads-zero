@@ -138,6 +138,8 @@ const SendSol = ({ multisigPda, vaultIndex }: SendSolProps) => {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
+          variant="outline"
+          size="sm"
           disabled={!isMember}
           onClick={(e) => {
             if (!wallet.publicKey) {
@@ -149,7 +151,7 @@ const SendSol = ({ multisigPda, vaultIndex }: SendSolProps) => {
             }
           }}
         >
-          Send SOL
+          Send
         </Button>
       </DialogTrigger>
       <DialogContent>

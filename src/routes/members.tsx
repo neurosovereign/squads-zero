@@ -31,6 +31,7 @@ import {
   planSetMemberPermissions,
 } from '~/lib/members';
 import { waitForConfirmation } from '../lib/transactionConfirmation';
+import { MemberLabel, MemberNameEditor } from '@/components/MemberName';
 
 const OTHER = '__other__';
 
@@ -166,7 +167,7 @@ const MembersPage = () => {
       <Suspense fallback={<div>Loading...</div>}>
         <div>
           <div className="mb-4 flex items-center justify-between">
-            <h1 className="flex items-center gap-2 text-3xl font-bold">
+            <h1 className="flex items-center gap-2 font-display text-2xl font-semibold tracking-tight">
               Members
               {isFetching && <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />}
             </h1>
@@ -184,8 +185,9 @@ const MembersPage = () => {
             <CardHeader>
               <CardTitle>Current members</CardTitle>
               <CardDescription>
-                Members of this multisig and their permission masks. Managed directly by the config
-                authority.
+                Members of this multisig and their permission masks. Names are stored locally in
+                this browser — the protocol itself has no on-chain naming. Permissions are managed
+                directly by the config authority.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -195,7 +197,7 @@ const MembersPage = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Public Key</TableHead>
+                      <TableHead>Member</TableHead>
                       <TableHead>Permissions</TableHead>
                       <TableHead>Mask</TableHead>
                       <TableHead />
@@ -211,12 +213,13 @@ const MembersPage = () => {
                         <TableRow key={key58}>
                           <TableCell className="font-mono text-xs">
                             <div className="flex items-center gap-2">
-                              <span className="break-all">{key58}</span>
+                              <MemberLabel memberKey={key58} className="text-xs" />
+                              <MemberNameEditor memberKey={key58} />
                               <button
                                 type="button"
                                 className="text-muted-foreground hover:text-white"
                                 onClick={() => copyKey(key58)}
-                                title="Copy address"
+                                title={`Copy address: ${key58}`}
                               >
                                 <Copy className="h-3.5 w-3.5" />
                               </button>
@@ -275,7 +278,7 @@ const MembersPage = () => {
                 <SelectContent>
                   {(multisigConfig?.members ?? []).map((m) => (
                     <SelectItem key={m.key.toBase58()} value={m.key.toBase58()}>
-                      <span className="font-mono text-xs">{m.key.toBase58()}</span>
+                      <MemberLabel memberKey={m.key.toBase58()} className="text-xs" />
                     </SelectItem>
                   ))}
                   <SelectItem value={OTHER}>Other address…</SelectItem>

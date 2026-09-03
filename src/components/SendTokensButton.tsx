@@ -7,6 +7,7 @@ import {
   DialogTrigger,
 } from '~/components/ui/dialog';
 import { Button } from './ui/button';
+import { SendHorizonal } from 'lucide-react';
 import { formatTransactionError } from '@/lib/utils';
 import { useState, useRef } from 'react';
 import {
@@ -177,6 +178,9 @@ const SendTokens = ({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
+          variant="ghost"
+          size="sm"
+          className="h-6 px-1.5 text-primary hover:bg-primary/10"
           disabled={!isMember}
           onClick={(e) => {
             if (!wallet.publicKey) {
@@ -186,7 +190,7 @@ const SendTokens = ({
             }
           }}
         >
-          Send Tokens
+          <SendHorizonal className="h-3.5 w-3.5" />
         </Button>
       </DialogTrigger>
       <DialogContent>

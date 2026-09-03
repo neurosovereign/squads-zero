@@ -24,3 +24,12 @@ Jito stake pool via the SPL stake-pool program's `DepositSol` instruction,
 wrapped in a vault-transaction proposal). The upstream hashes above therefore
 **do not apply** to builds from this tree; verify by rebuilding from source
 and diffing `dist/`.
+
+**2026-09-04 redesign build.** The deployed dist (bundle.js sha256
+`7c3d399a46a6843b09c56cab081d0c13b48a866450e41a9524316a4ebdf659da`) is
+reproduced byte-identically by `npm ci --legacy-peer-deps && npx webpack
+--config webpack.prod.js` from `package-lock.json` — **package-lock.json is
+the live lockfile for this tree** (a `yarn --frozen-lockfile` build resolves a
+different transitive tree and differs). Lockfile `resolved` URLs were
+rewritten from the build environment's mirror (`npm.mirrors.msh.team`) to
+`registry.npmjs.org`; all sha512 integrity entries verified on install.

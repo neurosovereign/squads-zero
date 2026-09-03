@@ -7,6 +7,7 @@ import type { ConfigAction } from '@sqds/multisig/lib/generated/types/ConfigActi
 import { useMultisigData } from '@/hooks/useMultisigData';
 import { decodeTransaction, DecodedInstruction } from '@/lib/transaction/decodeTransactionMessage';
 import { cn, renderPermissions } from '@/lib/utils';
+import { MemberLabel } from '@/components/MemberName';
 
 interface Props {
   transactionPda: string;
@@ -109,8 +110,8 @@ function VoterList({
       ) : (
         <div className="space-y-0.5">
           {voters.map((pk) => (
-            <div key={pk.toBase58()} className="font-mono break-all">
-              {pk.toBase58()}
+            <div key={pk.toBase58()} className="font-mono break-all" title={pk.toBase58()}>
+              <MemberLabel memberKey={pk.toBase58()} />
             </div>
           ))}
         </div>

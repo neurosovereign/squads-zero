@@ -52,7 +52,7 @@ const ProgramsPage = () => {
     <ErrorBoundary>
       <Suspense fallback={<div>Loading...</div>}>
         <div className="">
-          <h1 className="mb-4 text-3xl font-bold">Program Manager</h1>
+          <h1 className="mb-4 font-display text-2xl font-semibold tracking-tight">Program Manager</h1>
           <Card>
             <CardHeader>
               <CardTitle>Program</CardTitle>
@@ -86,7 +86,7 @@ const ProgramsPage = () => {
                 {validatedProgramId && programInfos && (
                   <div className="mt-4">
                     <h3 className="text-lg font-medium">Program Information</h3>
-                    <pre className="mt-2 overflow-auto rounded bg-gray-100 p-4">
+                    <pre className="mt-2 overflow-auto rounded-md border border-primary/10 bg-black/40 p-4 font-mono text-xs text-muted-foreground">
                       <div>Program Data Address: {programInfos.programDataAddress}</div>
                       <div>Program Authority: {programInfos.authority || 'Immutable'}</div>
                     </pre>

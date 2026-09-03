@@ -51,7 +51,7 @@ const LimitsPage = () => {
       <Suspense fallback={<div>Loading...</div>}>
         <div>
           <div className="mb-4 flex items-center justify-between">
-            <h1 className="flex items-center gap-2 text-3xl font-bold">
+            <h1 className="flex items-center gap-2 font-display text-2xl font-semibold tracking-tight">
               Spending Limits
               {isFetching && <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />}
             </h1>

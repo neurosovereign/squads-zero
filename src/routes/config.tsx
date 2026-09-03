@@ -18,7 +18,7 @@ const ConfigurationPage = () => {
     <ErrorBoundary>
       <Suspense fallback={<div>Loading...</div>}>
         <div className="">
-          <h1 className="mb-4 text-3xl font-bold">Multisig Configuration</h1>
+          <h1 className="mb-4 font-display text-2xl font-semibold tracking-tight">Multisig Configuration</h1>
           <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
             <Card>
               <CardHeader>

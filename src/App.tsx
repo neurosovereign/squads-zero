@@ -4,6 +4,7 @@ import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { AlertTriangle, CheckSquare } from 'lucide-react';
 import { Toaster } from './components/ui/sonner';
 import TabNav from './components/TabNav';
+import { Backdrop } from './components/Backdrop';
 
 import HomePage from './routes/_index';
 import ConfigPage from './routes/config';
@@ -27,7 +28,8 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <Wallet>
         <HashRouter>
-          <div className="flex h-screen min-w-full flex-col bg-background md:flex-row">
+          <div className="flex h-screen min-w-full flex-col md:flex-row">
+            <Backdrop />
             <Suspense>
               <TabNav />
             </Suspense>
@@ -53,6 +55,7 @@ const App = () => {
           </div>
 
           <Toaster
+            theme="dark"
             expand
             closeButton
             visibleToasts={3}

@@ -40,6 +40,27 @@ type TransactionRow = {
 
 const EOL_STATUSES = new Set(['Executed', 'Cancelled', 'Rejected']);
 
+/** Purely presentational status pill — the status string itself is derived above. */
+function StatusBadge({ status }: { status: string }) {
+  const tone =
+    status === 'Active'
+      ? 'bg-primary text-primary'
+      : status === 'Approved'
+        ? 'bg-success text-success'
+        : status === 'Rejected' || status === 'Cancelled'
+          ? 'bg-destructive text-destructive'
+          : status === '(stale)'
+            ? 'bg-warning text-warning'
+            : 'bg-muted-foreground/50 text-muted-foreground';
+  const [dot, text] = tone.split(' ');
+  return (
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-white/[0.06] bg-black/30 px-2 py-0.5 text-xs">
+      <span className={cn('status-dot', dot)} />
+      <span className={text}>{status}</span>
+    </span>
+  );
+}
+
 export default function TransactionTable({
   multisigPda,
   transactions,
@@ -138,16 +159,18 @@ function TransactionRowItem({
             <span>{Number(transaction.index)}</span>
           </div>
         </TableCell>
-        <TableCell className="block md:table-cell truncate text-blue-500">
+        <TableCell className="block md:table-cell truncate">
           <Link
             target="_blank"
             to={createSolanaExplorerUrl(transaction.transactionPda, rpcUrl!)}
-            className="truncate"
+            className="truncate font-mono text-xs text-primary/90 transition-colors hover:text-primary hover:underline"
           >
             {transaction.transactionPda}
           </Link>
         </TableCell>
-        <TableCell className="block md:table-cell">{status}</TableCell>
+        <TableCell className="block md:table-cell">
+          <StatusBadge status={status} />
+        </TableCell>
         <TableCell className="block md:table-cell">
           <ActionButtons
             multisigPda={multisigPda}

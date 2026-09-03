@@ -162,7 +162,7 @@ const StakePage = () => {
     <ErrorBoundary>
       <Suspense fallback={<div>Loading...</div>}>
         <div className="max-w-2xl">
-          <h1 className="mb-4 text-3xl font-bold">Stake SOL</h1>
+          <h1 className="mb-4 font-display text-2xl font-semibold tracking-tight">Stake SOL</h1>
           <Card>
             <CardHeader>
               <CardTitle>Delegate vault SOL to a validator</CardTitle>

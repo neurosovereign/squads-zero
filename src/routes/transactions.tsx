@@ -15,6 +15,7 @@ import { useMultisigData } from '@/hooks/useMultisigData';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { ActivityFeed } from '@/components/ActivityFeed';
 
 const TRANSACTIONS_PER_PAGE = 10;
 
@@ -50,7 +51,7 @@ export default function TransactionsPage() {
       <Suspense fallback={<div>Loading ...</div>}>
         <div>
           <div className="mb-4 flex items-center justify-between">
-            <h1 className="text-3xl font-bold flex items-center gap-2">
+            <h1 className="font-display text-2xl font-semibold tracking-tight flex items-center gap-2">
               Transactions
               {isFetching && <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />}
             </h1>
@@ -101,6 +102,15 @@ export default function TransactionsPage() {
               </PaginationContent>
             </Pagination>
           )}
+
+          <div className="mt-8">
+            <p className="holo-label mb-1">Vault Activity</p>
+            <p className="mb-3 text-xs text-muted-foreground">
+              Transfers in and out of the vaults — separate from governance proposals above, which
+              only record transactions that went through the multisig.
+            </p>
+            <ActivityFeed />
+          </div>
         </div>
       </Suspense>
     </ErrorBoundary>

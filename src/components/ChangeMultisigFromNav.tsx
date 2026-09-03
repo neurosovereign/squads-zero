@@ -1,5 +1,4 @@
 import { useMultisigAddress } from '@/hooks/useMultisigAddress';
-import { Button } from './ui/button';
 import { useNavigate } from 'react-router-dom';
 
 export const ChangeMultisigFromNav = () => {
@@ -12,8 +11,11 @@ export const ChangeMultisigFromNav = () => {
   };
 
   return (
-    <Button className={`mb-2 w-full bg-gray-500`} onClick={handleChangeMultisig}>
-      Switch Squad
-    </Button>
+    <button
+      onClick={handleChangeMultisig}
+      className="w-full rounded-md px-3 py-1.5 text-left text-xs text-muted-foreground/70 transition-colors hover:text-primary"
+    >
+      Switch squad…
+    </button>
   );
 };
