@@ -1,6 +1,6 @@
 <img width="1377" height="768" alt="bg-06" src="https://github.com/user-attachments/assets/b31d531c-107d-42d7-9420-3513170b6c49" />
 
-# Squads Zero (v4 Public Client)
+# Squads Zero
 
 **Squads Zero** is a fully refactored, optimization-focused fork of the `public-v4-client`, bypassing artificial subscription paywalls to provide a free, unrestricted multisig client ($0 cost).
 
