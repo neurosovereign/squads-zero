@@ -31,7 +31,7 @@ docker run -d -p 8080:80 squads-zero
 ```
 
 ### 4. Build Hash & Integrity
-Since we have red-designed the whole app, it is no longer possible to verify the hash. Sorry about that. Let your coding agent check the code. We didn't add anything malicious.
+Since we have re-designed the whole app, it is no longer possible to verify the hash. Sorry about that. Let your coding agent check the code. We didn't add anything malicious.
 
 ## Contributing & License
 Contributions via pull requests are welcome. Licensed under the MIT License.
