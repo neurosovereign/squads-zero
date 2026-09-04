@@ -7,8 +7,7 @@
 ## Features
 - **Multiple Accounts** in a free interface
 - **Helius** integration
-- **Transaction display** for all accounts
--  
+- **Transaction display** for all accounts 
 - **Self-hosting**: Run via Docker with Nginx.
 
 ## Getting Started
