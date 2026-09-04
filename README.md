@@ -5,7 +5,10 @@
 **Squads Zero** is a fully refactored, optimization-focused fork of the `public-v4-client`, bypassing artificial subscription paywalls to provide a free, unrestricted multisig client ($0 cost).
 
 ## Features
-- **Verifiable Build**: Static files in `dist/` can be verified using remote URLs or IPFS CIDs against expected hashes.
+- **Multiple Accounts** in a free interface
+- **Helius** integration
+- **Transaction display** for all accounts
+-  
 - **Self-hosting**: Run via Docker with Nginx.
 
 ## Getting Started
