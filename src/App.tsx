@@ -7,16 +7,14 @@ import TabNav from './components/TabNav';
 import { Backdrop } from './components/Backdrop';
 
 import HomePage from './routes/_index';
-import ConfigPage from './routes/config';
 import CreatePage from './routes/create';
 import SettingsPage from './routes/settings';
 import TransactionsPage from './routes/transactions';
-import ProgramsPage from './routes/programs';
 import LimitsPage from './routes/limits';
 import StakePage from './routes/stake';
 import MembersPage from './routes/members';
-import JitoPage from './routes/jito';
-import { Routes, Route, HashRouter } from 'react-router-dom';
+import SquadSettingsPage from './routes/squadSettings';
+import { Routes, Route, HashRouter, Navigate } from 'react-router-dom';
 
 import './styles/global.css'; // Load Tailwind styles
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -38,15 +36,16 @@ const App = () => {
                 <Suspense fallback={<p>Loading...</p>}>
                   <Routes>
                     <Route index path="/" element={<HomePage />} />
-                    <Route path="/config" element={<ConfigPage />} />
+                    <Route path="/config" element={<Navigate to="/squad-settings" replace />} />
                     <Route path="/create" element={<CreatePage />} />
                     <Route path="/settings" element={<SettingsPage />} />
                     <Route path="/transactions" element={<TransactionsPage />} />
-                    <Route path="/programs" element={<ProgramsPage />} />
+                    <Route path="/programs" element={<Navigate to="/squad-settings" replace />} />
+                    <Route path="/squad-settings" element={<SquadSettingsPage />} />
                     <Route path="/limits" element={<LimitsPage />} />
                     <Route path="/stake" element={<StakePage />} />
                     <Route path="/members" element={<MembersPage />} />
-                    <Route path="/jito" element={<JitoPage />} />
+                    <Route path="/jito" element={<Navigate to="/stake" replace />} />
                     <Route path="*" element={<p>404 - Not Found</p>} /> {/* Catch-all route */}
                   </Routes>
                 </Suspense>

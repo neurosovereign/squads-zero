@@ -1,15 +1,18 @@
+import { useState } from 'react';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { Copy, TrendingUp, Wallet, Landmark, Users } from 'lucide-react';
+import { Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import { useMultisigData } from '@/hooks/useMultisigData';
 import { useMultisig } from '@/hooks/useServices';
 import { useTreasury, type VaultSnapshot, type TokenHolding } from '@/hooks/useTreasury';
 import { usePrices, SOL_MINT } from '@/hooks/usePrices';
+import { usePortfolioHistory } from '@/hooks/usePortfolioHistory';
+import { hasHeliumKey } from '@/hooks/useActivity';
 import { KNOWN_TOKENS, tokenSymbol, truncateAddress } from './tokenMeta';
+import { PortfolioChart } from './PortfolioChart';
 import SendSol from './SendSolButton';
 import SendTokens from './SendTokensButton';
 import { ReceiveButton } from './ReceiveButton';
-import { StakeAccountActions } from './StakeAccountActions';
 
 /** USD price for a token: DAS-enriched value first, then the Jupiter map. */
 const tokenPrice = (t: TokenHolding, jup: Record<string, number> | null): number | null =>
@@ -60,31 +63,6 @@ const tokenUsd = (
   return { usd, unpriced };
 };
 
-function StatPanel({
-  icon,
-  label,
-  value,
-  sub,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  sub?: string;
-}) {
-  return (
-    <div className="holo-panel rounded-lg p-4">
-      <div className="flex items-center gap-2">
-        <span className="text-primary/80 [&>svg]:h-3.5 [&>svg]:w-3.5">{icon}</span>
-        <p className="holo-label">{label}</p>
-      </div>
-      <p className="font-display mt-3 text-xl font-semibold tracking-tight text-foreground">
-        {value}
-      </p>
-      {sub && <p className="mt-1 font-mono text-xs text-muted-foreground">{sub}</p>}
-    </div>
-  );
-}
-
 export function TreasuryBoard() {
   const { multisigAddress, programId } = useMultisigData();
   const { data: multisigConfig } = useMultisig();
@@ -95,9 +73,47 @@ export function TreasuryBoard() {
   // Prefer the DAS-supplied SOL price; fall back to Jupiter.
   const solUsd = treasury?.solPriceUsd ?? prices?.[SOL_MINT] ?? null;
 
+  const vaults = treasury?.vaults ?? [];
+
+  // Portfolio value history for the hero chart (Helius flows + daily prices).
+  const symbolOf = (mint: string): string => {
+    for (const v of vaults) {
+      const t = (v.tokens ?? []).find((x) => x.mint === mint);
+      if (t) return displaySymbol(t);
+    }
+    return KNOWN_TOKENS[mint]?.symbol ?? tokenSymbol(mint);
+  };
+  const currentUsdOf = (mint: string): number | null => {
+    for (const v of vaults) {
+      const t = (v.tokens ?? []).find((x) => x.mint === mint);
+      if (t) return tokenPrice(t, prices ?? null);
+    }
+    return prices?.[mint] ?? null;
+  };
+  // Default chart data covers the last 30 days (7D/30D ranges); the full
+  // history walk only runs once the user selects ALL.
+  const [wantAllHistory, setWantAllHistory] = useState(false);
+  const history = usePortfolioHistory(
+    vaults,
+    solUsd,
+    prices ?? undefined,
+    { symbolOf, currentUsdOf },
+    30
+  );
+  const allHistory = usePortfolioHistory(
+    vaults,
+    solUsd,
+    prices ?? undefined,
+    { symbolOf, currentUsdOf },
+    null,
+    wantAllHistory
+  );
+  const chartHistory = wantAllHistory
+    ? (allHistory.data ? allHistory : history)
+    : history;
+
   if (!multisigAddress) return null;
 
-  const vaults = treasury?.vaults ?? [];
   const liquidSol = vaults.reduce((sum, v) => sum + v.lamports, 0) / LAMPORTS_PER_SOL;
   const stakedSol = vaults.reduce((sum, v) => sum + stakedLamports(v), 0) / LAMPORTS_PER_SOL;
   const stakeCount = vaults.reduce((sum, v) => sum + (v.stakes?.length ?? 0), 0);
@@ -145,11 +161,6 @@ export function TreasuryBoard() {
     return bUsd - aUsd || a.mint.localeCompare(b.mint);
   });
 
-  // Flatten stake accounts for the management section.
-  const allStakes = vaults.flatMap((v) =>
-    (v.stakes ?? []).map((s) => ({ vault: v, stake: s }))
-  );
-
   return (
     <div className="space-y-6">
       <div>
@@ -174,52 +185,80 @@ export function TreasuryBoard() {
       )}
 
       {isLoading ? (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="holo-panel h-24 animate-pulse rounded-lg" />
-          ))}
-        </div>
+        <div className="holo-panel h-64 animate-pulse rounded-lg" />
       ) : (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <StatPanel
-            icon={<TrendingUp />}
-            label="Total Value"
-            value={totalUsd != null ? fmtUsd(totalUsd) : `${fmtSol(totalSol)} SOL`}
-            sub={totalUsd != null ? `${fmtSol(totalSol)} SOL` : 'USD prices unavailable'}
-          />
-          <StatPanel
-            icon={<Wallet />}
-            label="Liquid"
-            value={`${fmtSol(liquidSol)} SOL`}
-            sub={solUsd != null ? fmtUsd(liquidSol * solUsd) : undefined}
-          />
-          <StatPanel
-            icon={<Landmark />}
-            label="Staked"
-            value={`${fmtSol(stakedSol)} SOL`}
-            sub={
-              stakeCount > 0
-                ? `${stakeCount} stake account${stakeCount === 1 ? '' : 's'}` +
-                  (solUsd != null ? ` · ${fmtUsd(stakedSol * solUsd)}` : '')
-                : solUsd != null
-                  ? fmtUsd(0)
-                  : undefined
-            }
-          />
-          <StatPanel
-            icon={<Users />}
-            label="Squad"
-            value={
-              multisigConfig
-                ? `${multisigConfig.threshold} of ${multisigConfig.members.length}`
-                : '—'
-            }
-            sub={
-              multisigConfig
-                ? `threshold · members · tx #${Number(multisigConfig.transactionIndex)}`
-                : undefined
-            }
-          />
+        <div className="holo-panel rounded-lg p-5">
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+            {/* Total value + compact squad vitals */}
+            <div className="flex flex-col justify-between gap-6">
+              <div>
+                <p className="holo-label">Total Value</p>
+                <p className="font-display solana-gradient-text mt-2 text-4xl font-semibold tracking-tight">
+                  {totalUsd != null ? fmtUsd(totalUsd) : `${fmtSol(totalSol)} SOL`}
+                </p>
+                <p className="mt-1 font-mono text-sm text-muted-foreground">
+                  {totalUsd != null ? `${fmtSol(totalSol)} SOL` : 'USD prices unavailable'}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-x-5 gap-y-2">
+                <div>
+                  <p className="holo-label">Liquid</p>
+                  <p className="mt-1 font-mono text-sm text-foreground">{fmtSol(liquidSol)} SOL</p>
+                  {solUsd != null && (
+                    <p className="font-mono text-[11px] text-muted-foreground">
+                      {fmtUsd(liquidSol * solUsd)}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <p className="holo-label">Staked</p>
+                  <p className="mt-1 font-mono text-sm text-foreground">{fmtSol(stakedSol)} SOL</p>
+                  <p className="font-mono text-[11px] text-muted-foreground">
+                    {stakeCount > 0
+                      ? `${stakeCount} account${stakeCount === 1 ? '' : 's'}`
+                      : solUsd != null
+                        ? fmtUsd(0)
+                        : '—'}
+                  </p>
+                </div>
+                <div>
+                  <p className="holo-label">Squad</p>
+                  <p className="mt-1 font-mono text-sm text-foreground">
+                    {multisigConfig
+                      ? `${multisigConfig.threshold} of ${multisigConfig.members.length}`
+                      : '—'}
+                  </p>
+                  <p className="font-mono text-[11px] text-muted-foreground">
+                    {multisigConfig ? `threshold · tx #${Number(multisigConfig.transactionIndex)}` : ''}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Value over time */}
+            <div className="min-h-[220px]">
+              {!hasHeliumKey() ? (
+                <div className="flex h-full items-center justify-center rounded-md border border-primary/10 bg-black/20 p-6 text-center text-sm text-muted-foreground">
+                  Add a Helius API key in Settings to chart the squad's value over time.
+                </div>
+              ) : chartHistory.isLoading ? (
+                <div className="flex h-full min-h-[220px] flex-col justify-end gap-2">
+                  <div className="h-3 w-24 animate-pulse rounded bg-primary/15" />
+                  <div className="h-full min-h-[160px] animate-pulse rounded-md bg-primary/10" />
+                </div>
+              ) : chartHistory.isError || !chartHistory.data ? (
+                <div className="flex h-full items-center justify-center rounded-md border border-primary/10 bg-black/20 p-6 text-center text-sm text-muted-foreground">
+                  History unavailable — the activity feed still works below.
+                </div>
+              ) : (
+                <PortfolioChart
+                  series={chartHistory.data.series}
+                  approximated={chartHistory.data.approximatedSymbols}
+                  onNeedAll={() => setWantAllHistory(true)}
+                />
+              )}
+            </div>
+          </div>
         </div>
       )}
 
@@ -402,56 +441,7 @@ export function TreasuryBoard() {
         </section>
       )}
 
-      {/* Stake accounts */}
-      {allStakes.length > 0 && (
-        <section>
-          <p className="holo-label mb-2">Stake Accounts</p>
-          <div className="holo-panel divide-y rounded-lg">
-            {allStakes.map(({ vault, stake }) => (
-              <div
-                key={stake.address}
-                className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center"
-              >
-                <div className="flex min-w-0 flex-1 items-center gap-3">
-                  <span
-                    className={`status-dot ${
-                      stake.deactivating ? 'bg-warning' : stake.state === 'active' ? 'bg-success' : 'bg-muted-foreground/50'
-                    }`}
-                  />
-                  <div className="min-w-0">
-                    <button
-                      onClick={() => copy(stake.address, 'Stake account')}
-                      className="block truncate font-mono text-xs text-foreground transition-colors hover:text-primary"
-                      title={stake.address}
-                    >
-                      {truncateAddress(stake.address, 6)}
-                    </button>
-                    <p className="mt-0.5 font-mono text-[11px] text-muted-foreground">
-                      V{vault.index} · {stake.deactivating ? 'deactivating' : stake.state}
-                      {stake.voter && (
-                        <>
-                          {' '}· <span title={`Validator ${stake.voter}`}>{truncateAddress(stake.voter, 4)}</span>
-                        </>
-                      )}
-                    </p>
-                  </div>
-                </div>
-                <p className="font-mono text-sm">
-                  {fmtSol(stake.lamports / LAMPORTS_PER_SOL)} SOL
-                </p>
-                <StakeAccountActions
-                  stakeAddress={stake.address}
-                  vaultIndex={vault.index}
-                  deactivating={stake.deactivating}
-                />
-              </div>
-            ))}
-          </div>
-          <p className="mt-2 text-xs text-muted-foreground">
-            Deactivate/withdraw create a proposal — approve and execute it from Transactions.
-          </p>
-        </section>
-      )}
+      {/* Stake accounts now live on the Stake page (Validator tab). */}
     </div>
   );
 }

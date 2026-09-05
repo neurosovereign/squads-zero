@@ -38,24 +38,34 @@ export function StakeAccountActions({
 }) {
   const wallet = useWallet();
   const walletModal = useWalletModal();
-  const { connection, multisigAddress, programId, multisigVault } = useMultisigData();
+  const { connection, multisigAddress, programId } = useMultisigData();
   const isMember = useAccess();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [busy, setBusy] = useState<Action | null>(null);
 
+  // Derive the PDA of the vault that actually owns this stake account — NOT
+  // the currently selected vault (multisigVault). The stake account's staker/
+  // withdrawer authority is this vault's PDA, and withdrawn lamports always
+  // return to it.
+  const [vaultPda] = multisig.getVaultPda({
+    multisigPda: new PublicKey(multisigAddress!),
+    index: vaultIndex,
+    programId,
+  });
+
   const propose = async (action: Action) => {
     if (!wallet.publicKey) throw 'Wallet not connected';
-    if (!multisigAddress || !multisigVault) throw 'No multisig loaded';
+    if (!multisigAddress) throw 'No multisig loaded';
 
     const stakePubkey = new PublicKey(stakeAddress);
     const instructions =
       action === 'deactivate'
-        ? StakeProgram.deactivate({ stakePubkey, authorizedPubkey: multisigVault }).instructions
+        ? StakeProgram.deactivate({ stakePubkey, authorizedPubkey: vaultPda }).instructions
         : StakeProgram.withdraw({
             stakePubkey,
-            authorizedPubkey: multisigVault,
-            toPubkey: multisigVault,
+            authorizedPubkey: vaultPda,
+            toPubkey: vaultPda,
             lamports: await connection.getBalance(stakePubkey),
           }).instructions;
 
@@ -66,7 +76,7 @@ export function StakeAccountActions({
     const blockhash = (await connection.getLatestBlockhash()).blockhash;
     const txMessage = new TransactionMessage({
       instructions,
-      payerKey: multisigVault,
+      payerKey: vaultPda,
       recentBlockhash: blockhash,
     });
     const transactionIndex = BigInt(Number(multisigInfo.transactionIndex) + 1);

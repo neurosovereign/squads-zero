@@ -1,58 +1,108 @@
+import ChangeThresholdInput from '@/components/ChangeThresholdInput';
+import ChangeTimelockInput from '@/components/ChangeTimelockInput';
 import ChangeUpgradeAuthorityInput from '@/components/ChangeUpgradeAuthorityInput';
+import CreateProgramUpgradeInput from '@/components/CreateProgramUpgradeInput';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PublicKey } from '@solana/web3.js';
+import { useMultisigData } from '@/hooks/useMultisigData';
 import { useMultisig } from '@/hooks/useServices';
+import { useProgram } from '@/hooks/useProgram';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Suspense, useState } from 'react';
-import { useProgram } from '../hooks/useProgram';
-import CreateProgramUpgradeInput from '../components/CreateProgramUpgradeInput';
+import { Link } from 'react-router-dom';
 
-const ProgramsPage = () => {
+/**
+ * Squad settings — the rarely-changed on-chain knobs of the multisig, combined
+ * from the old Configuration and Programs pages: threshold, timelock and
+ * program authority/upgrades. Reached via the gear on the sidebar squad card.
+ */
+const SquadSettingsPage = () => {
+  const { multisigAddress } = useMultisigData();
   const { data: multisigConfig } = useMultisig();
 
-  // State for program ID input and validation
+  // Program manager state (unchanged from the old Programs page).
   const [programIdInput, setProgramIdInput] = useState('');
   const [programIdError, setProgramIdError] = useState('');
   const [validatedProgramId, setValidatedProgramId] = useState<string | null>(null);
-
-  // Only use the hook when we have a validated program ID
   const { data: programInfos } = useProgram(validatedProgramId);
 
-  // Validate the program ID
   const validateProgramId = () => {
-    // Reset error state
     setProgramIdError('');
-
-    // Empty check
     if (!programIdInput.trim()) {
       setProgramIdError('Program ID is required');
       return;
     }
-
-    // Try to validate as PublicKey
     try {
       new PublicKey(programIdInput);
-      // If we get here, it's a valid PublicKey format
       setValidatedProgramId(programIdInput);
-    } catch (error) {
+    } catch {
       setProgramIdError('Invalid Program ID format');
     }
   };
 
-  // Clear program ID and related data
   const clearProgramId = () => {
     setProgramIdInput('');
     setValidatedProgramId(null);
     setProgramIdError('');
   };
 
+  const nextTxIndex = Number(multisigConfig ? multisigConfig.transactionIndex : 0) + 1;
+
   return (
     <ErrorBoundary>
       <Suspense fallback={<div>Loading...</div>}>
         <div className="">
-          <h1 className="mb-4 font-display text-2xl font-semibold tracking-tight">Program Manager</h1>
+          <h1 className="mb-1 font-display text-2xl font-semibold tracking-tight">Squad Settings</h1>
+          <p className="mb-4 text-sm text-muted-foreground">
+            Rarely-changed on-chain configuration. Member management — names, permissions, adding
+            and removing members — lives on the{' '}
+            <Link to="/members" className="text-primary underline-offset-2 hover:underline">
+              Members page
+            </Link>
+            .
+          </p>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Change Threshold</CardTitle>
+                <CardDescription>
+                  Change the threshold required to execute a Multisig transaction.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {multisigConfig ? (
+                  <span>Current Threshold: {multisigConfig.threshold} </span>
+                ) : null}
+                <ChangeThresholdInput
+                  multisigPda={multisigAddress!}
+                  transactionIndex={nextTxIndex}
+                />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Timelock</CardTitle>
+                <CardDescription>
+                  Seconds that must pass between transaction approval and execution.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {multisigConfig != null ? (
+                  <span>Current Timelock: {multisigConfig.timeLock}s </span>
+                ) : null}
+                <ChangeTimelockInput
+                  multisigPda={multisigAddress!}
+                  transactionIndex={nextTxIndex}
+                  currentTimeLock={multisigConfig?.timeLock ?? 0}
+                />
+              </CardContent>
+            </Card>
+          </div>
+
+          <p className="holo-label mb-2 mt-8">Program Manager</p>
           <Card>
             <CardHeader>
               <CardTitle>Program</CardTitle>
@@ -114,9 +164,7 @@ const ProgramsPage = () => {
                   <CardContent>
                     <ChangeUpgradeAuthorityInput
                       programInfos={programInfos}
-                      transactionIndex={
-                        Number(multisigConfig ? multisigConfig.transactionIndex : 0) + 1
-                      }
+                      transactionIndex={nextTxIndex}
                     />
                   </CardContent>
                 </Card>
@@ -130,9 +178,7 @@ const ProgramsPage = () => {
                   <CardContent>
                     <CreateProgramUpgradeInput
                       programInfos={programInfos}
-                      transactionIndex={
-                        Number(multisigConfig ? multisigConfig.transactionIndex : 0) + 1
-                      }
+                      transactionIndex={nextTxIndex}
                     />
                   </CardContent>
                 </Card>
@@ -145,4 +191,4 @@ const ProgramsPage = () => {
   );
 };
 
-export default ProgramsPage;
+export default SquadSettingsPage;

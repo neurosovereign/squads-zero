@@ -141,3 +141,28 @@ export const useSquadActivity = (addresses: string[]) => {
 };
 
 export const hasHeliumKey = (): boolean => !!getHeliumKey();
+
+/**
+ * Full history walk for the portfolio chart: pages backwards until a short
+ * page or the safety cap. One request per vault per page (10 txs each) —
+ * bounded so free-tier keys stay healthy; squads with deep history get the
+ * most recent ~100 transactions per vault.
+ */
+const HISTORY_MAX_PAGES_PER_VAULT = 10;
+
+export const fetchAllActivity = async (
+  addresses: string[],
+  apiKey: string
+): Promise<ActivityEvent[]> => {
+  const all: ActivityEvent[] = [];
+  for (const addr of addresses) {
+    let before: string | undefined;
+    for (let page = 0; page < HISTORY_MAX_PAGES_PER_VAULT; page++) {
+      const events = await fetchPage(addr, apiKey, before);
+      all.push(...events);
+      if (events.length < PAGE_SIZE) break;
+      before = events[events.length - 1].signature;
+    }
+  }
+  return all;
+};

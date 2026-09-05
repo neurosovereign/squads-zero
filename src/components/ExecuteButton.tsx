@@ -23,6 +23,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import { waitForConfirmation } from '../lib/transactionConfirmation';
 import { useExecuteButtonState } from '@/hooks/useProposalActions';
 import type { TransactionKind } from '@/hooks/useServices';
+import { recordExecutionAndShouldShowTip } from '~/lib/donation';
+import { DonateNudge } from './DonateNudge';
+import { DonateDialog } from './DonateDialog';
 
 function formatTimeRemaining(seconds: number): string {
   const days = Math.floor(seconds / 86400);
@@ -63,6 +66,8 @@ const ExecuteButton = ({
   const [isOpen, setIsOpen] = useState(false);
   const closeDialog = () => setIsOpen(false);
   const [isPending, setIsPending] = useState(false);
+  const [showTipLine, setShowTipLine] = useState(false);
+  const [donateOpen, setDonateOpen] = useState(false);
   const wallet = useWallet();
   const walletModal = useWalletModal();
   const [priorityFeeLamports, setPriorityFeeLamports] = useState<number>(5000);
@@ -207,6 +212,11 @@ const ExecuteButton = ({
     // Stage 4: confirmed
     toast.success('Transaction executed.', { id: 'execute' });
 
+    // Frequency-capped tip line after successful vault executions.
+    if (kind === 'vault' && recordExecutionAndShouldShowTip()) {
+      setShowTipLine(true);
+    }
+
     closeDialog();
     await Promise.all([
       queryClient.invalidateQueries({ queryKey: ['transactions'] }),
@@ -231,6 +241,8 @@ const ExecuteButton = ({
             {formatTimeRemaining(timelockSecondsRemaining!)} remaining
           </div>
         )}
+        {showTipLine && <DonateNudge onSupport={() => setDonateOpen(true)} />}
+        <DonateDialog open={donateOpen} onOpenChange={setDonateOpen} />
       </div>
       <DialogContent>
         <DialogHeader>

@@ -13,7 +13,7 @@ export const ChangeMultisigFromNav = () => {
   return (
     <button
       onClick={handleChangeMultisig}
-      className="w-full rounded-md px-3 py-1.5 text-left text-xs text-muted-foreground/70 transition-colors hover:text-primary"
+      className="flex-1 rounded-md px-3 py-1.5 text-left text-xs text-muted-foreground/70 transition-colors hover:text-primary"
     >
       Switch squad…
     </button>
