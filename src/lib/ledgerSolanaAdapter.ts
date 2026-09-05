@@ -83,6 +83,10 @@ export class LedgerWalletAdapter extends BaseSignerWalletAdapter {
   }
 
   async connect(): Promise<void> {
+    // Tracked outside the try so the catch can release the WebHID handle if
+    // a later step fails — otherwise the device stays open and every retry
+    // dies with "The device is already open".
+    let transport: Transport | null = null;
     try {
       if (this.connected || this.connecting) return;
       if (this._readyState !== WalletReadyState.Loadable) throw new WalletNotReadyError();
@@ -96,7 +100,6 @@ export class LedgerWalletAdapter extends BaseSignerWalletAdapter {
         throw new WalletLoadError(error?.message, error);
       }
 
-      let transport: Transport;
       try {
         transport = await TransportWebHIDClass.create();
       } catch (error: any) {
@@ -127,6 +130,14 @@ export class LedgerWalletAdapter extends BaseSignerWalletAdapter {
 
       this.emit('connect', publicKey);
     } catch (error: any) {
+      // Connect failed after the transport was created: release the device.
+      if (transport && !this._transport) {
+        try {
+          await transport.close();
+        } catch {
+          // best effort — the next create() would fail otherwise
+        }
+      }
       this.emit('error', error);
       throw error;
     } finally {
