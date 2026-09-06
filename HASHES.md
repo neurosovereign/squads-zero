@@ -13,6 +13,13 @@
 
 ---
 
+**Squads Zero releases.** Fork releases are built deterministically by CI
+(`.github/workflows/release.yml`) and published with `dist-hash.txt`,
+`dist.tar.gz`, and `SHA256SUMS` on the
+[releases page](https://github.com/neurosovereign/squads-zero/releases).
+Those artifacts are the canonical hashes for this fork. The table above lists
+**upstream** (`Squads-Protocol/public-v4-client`) commit → build hashes.
+
 **Local divergence notice.** This fork carries modifications on top of the
 upstream release: a custom Ledger wallet adapter
 (`src/lib/ledgerSolanaAdapter.ts`, built on Ledger's official libraries,
