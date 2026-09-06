@@ -1,0 +1,83 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Enable Yarn 1 (matches Dockerfile)
+        run: |
+          corepack enable
+          corepack prepare yarn@1.22.22 --activate
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --non-interactive --check-files --ignore-scripts
+
+      - name: Build
+        env:
+          NODE_ENV: production
+        run: yarn build
+
+      - name: Normalize build output (matches Dockerfile determinism)
+        run: |
+          SOURCE_DATE_EPOCH=315532800
+          find dist -exec touch -d @${SOURCE_DATE_EPOCH} {} +
+          find dist -exec chmod 644 {} +
+
+      - name: Compute canonical dist hash
+        id: hash
+        run: |
+          HASH="$(cd dist && find . -type f -print0 | sort -z | xargs -0 cat | sha256sum | awk '{ print $1 }')"
+          echo "dist-hash=$HASH" >> "$GITHUB_OUTPUT"
+          echo "$HASH" > dist-hash.txt
+
+      - name: Package artifacts
+        run: |
+          tar --sort=name --mtime=@315532800 --owner=0 --group=0 --numeric-owner -czf dist.tar.gz dist
+          sha256sum dist.tar.gz dist-hash.txt > SHA256SUMS
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: squads-zero-${{ github.sha }}
+          if-no-files-found: error
+          path: |
+            dist.tar.gz
+            SHA256SUMS
+            dist-hash.txt
+
+      - name: Create GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist.tar.gz
+            SHA256SUMS
+            dist-hash.txt
+          body: |
+            Deterministic build of `${{ github.ref_name }}` (commit `${{ github.sha }}`).
+
+            **Canonical dist hash (SHA-256):** `${{ steps.hash.outputs.dist-hash }}`
+
+            - `dist-hash.txt` — SHA-256 over the sorted concatenation of all files in `dist/` (same formula as `scripts/generate-hash.sh`, the `hash.txt` embedded in the Docker image, and the verify scripts)
+            - `dist.tar.gz` — the exact bundle the hash was computed over
+            - `SHA256SUMS` — checksums of the release artifacts themselves
+
+            Verify:
+            - a downloaded release: `sha256sum -c SHA256SUMS`
+            - any live deployment: `./scripts/verify-remote.sh <url> ${{ steps.hash.outputs.dist-hash }}`
+            - from source: rebuild with Node 20, run `./scripts/generate-hash.sh`, compare with `dist-hash.txt`
