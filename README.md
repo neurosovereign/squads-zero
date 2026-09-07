@@ -24,6 +24,8 @@ It is a pure static site: there is no backend, no telemetry, and no analytics. Y
 
 An optional, dismissible donation nudge is shown after successful executions; donating is never required.
 
+<img width="2874" height="1624" alt="squads-zero-client" src="https://github.com/user-attachments/assets/eb303e92-5b70-44f1-8b86-bd23159387aa" />
+
 ## Requirements
 
 | Requirement | Notes |
