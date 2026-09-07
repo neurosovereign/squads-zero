@@ -67,6 +67,9 @@ Optional: print the deterministic build hash so you can compare it against the p
 ./scripts/generate-hash.sh
 ```
 
+<img width="2868" height="1628" alt="squads-zero-client-stake" src="https://github.com/user-attachments/assets/aac77bcf-9449-419e-a5e7-b9f85dc1aef1" />
+
+
 ### 2. Development mode
 
 ```bash
@@ -134,7 +137,7 @@ There is also `./scripts/verify-ipfs.sh <CID> <hash>` for IPFS deployments.
 
 ## Differences from upstream
 
-The upstream `public-v4-client` is already free — the subscription paywall and account limits exist only in Squads' official hosted app, so there is no paywall to remove here. What this fork adds on top: a custom Ledger wallet adapter (`src/lib/ledgerSolanaAdapter.ts`), a spending-limits page (`/limits`), a members page (`/members`), a much expanded staking page (`/stake`) — native staking plus direct liquid-staking deposits into several providers (JitoSOL, bSOL, laineSOL, dSOL, bonkSOL), replacing upstream's text-only staking sub-page — the treasury portfolio chart, the activity feed, and the donation nudge. The full list with file references lives in [`HASHES.md`](HASHES.md).
+What this fork adds on top: a custom Ledger wallet adapter (`src/lib/ledgerSolanaAdapter.ts`), a spending-limits page (`/limits`), a members page (`/members`), a much expanded staking page (`/stake`) — native staking plus direct liquid-staking deposits into several providers (JitoSOL, bSOL, laineSOL, dSOL, bonkSOL), replacing upstream's text-only staking sub-page — the treasury portfolio chart, the activity feed, and the donation nudge. The full list with file references lives in [`HASHES.md`](HASHES.md).
 
 ## Security model
 
