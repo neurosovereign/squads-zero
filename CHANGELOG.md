@@ -5,6 +5,13 @@
 
 * **lockfile:** updated lockfile ([c8e1b4a](https://github.com/Squads-Protocol/public-v4-client/commit/c8e1b4a3d209b7c1c3cfc4d9e7edb8e187e22833))
 
+## [1.5.1](https://github.com/neurosovereign/squads-zero/compare/v1.5.0...v1.5.1) (2026-09-07)
+
+
+### Bug Fixes
+
+* resolve yarn.lock packages from registry.npmjs.org ([7d2ecc9](https://github.com/neurosovereign/squads-zero/commit/7d2ecc9d3c095b2d406f7cbab9ab395935693736))
+
 ## [1.4.1](https://github.com/Squads-Protocol/public-v4-client/compare/v1.4.0...v1.4.1) (2026-06-17)
 
 
