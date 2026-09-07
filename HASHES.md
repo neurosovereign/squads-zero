@@ -24,10 +24,12 @@ Those artifacts are the canonical hashes for this fork. The table above lists
 upstream release: a custom Ledger wallet adapter
 (`src/lib/ledgerSolanaAdapter.ts`, built on Ledger's official libraries,
 derivation `44'/501'/0'`), a spending-limits page
-(`src/lib/spendingLimits.ts`, `/limits`), a staking page (`src/lib/staking.ts`,
-`/stake`), a members page (`src/lib/members.ts`, `/members`), and a JitoSOL
-deposit page (`src/lib/jitoPool.ts`, `/jito` — direct SOL deposit into the
-Jito stake pool via the SPL stake-pool program's `DepositSol` instruction,
-wrapped in a vault-transaction proposal). The upstream hashes above therefore
+(`src/lib/spendingLimits.ts`, `/limits`), an expanded staking page
+(`src/lib/staking.ts`, `/stake` — native staking plus direct SOL deposits
+into several liquid-staking providers via the SPL stake-pool program's
+`DepositSol` instruction, wrapped in a vault-transaction proposal;
+`src/lib/jitoPool.ts`, pool decoder; `src/lib/liquidPools.ts`, provider
+configs), and a members page
+(`src/lib/members.ts`, `/members`). The upstream hashes above therefore
 **do not apply** to builds from this tree; verify by rebuilding from source
 and diffing `dist/`.

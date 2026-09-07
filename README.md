@@ -15,7 +15,7 @@ It is a pure static site: there is no backend, no telemetry, and no analytics. Y
 - **Treasury dashboard** — balances, token list, and a portfolio value chart per vault
 - **Transaction management** — propose, approve, reject, execute; full instruction-level display for any transaction
 - **Spending limits** — configure per-member, per-token flow limits (`/limits`)
-- **Staking** — native SOL staking view and JitoSOL deposits via vault proposals (`/stake`, `/jito`)
+- **Staking** — native SOL staking plus liquid-staking deposits (JitoSOL, bSOL, laineSOL, dSOL, bonkSOL) via vault proposals (`/stake`)
 - **Members & settings** — manage members, thresholds, timelock, and upgrade authority (`/members`, `/squad-settings`)
 - **Hardware wallets** — Ledger support via a custom WebHID adapter (derivation path `44'/501'/0'`)
 - **Program upgrades & config authority** — full support for on-chain program management
@@ -134,7 +134,7 @@ There is also `./scripts/verify-ipfs.sh <CID> <hash>` for IPFS deployments.
 
 ## Differences from upstream
 
-Beyond removing the paywall and account limits, this fork adds: a custom Ledger wallet adapter (`src/lib/ledgerSolanaAdapter.ts`), a spending-limits page (`/limits`), a staking page (`/stake`), a members page (`/members`), a JitoSOL deposit page (`/jito`), the treasury portfolio chart, the activity feed, and the donation nudge. The full list with file references lives in [`HASHES.md`](HASHES.md).
+The upstream `public-v4-client` is already free — the subscription paywall and account limits exist only in Squads' official hosted app, so there is no paywall to remove here. What this fork adds on top: a custom Ledger wallet adapter (`src/lib/ledgerSolanaAdapter.ts`), a spending-limits page (`/limits`), a members page (`/members`), a much expanded staking page (`/stake`) — native staking plus direct liquid-staking deposits into several providers (JitoSOL, bSOL, laineSOL, dSOL, bonkSOL), replacing upstream's text-only staking sub-page — the treasury portfolio chart, the activity feed, and the donation nudge. The full list with file references lives in [`HASHES.md`](HASHES.md).
 
 ## Security model
 
