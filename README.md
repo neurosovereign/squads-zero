@@ -5,7 +5,7 @@
 [![Release](https://img.shields.io/github/v/release/neurosovereign/squads-zero?display_name=tag&sort=semver)](https://github.com/neurosovereign/squads-zero/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**Squads Zero** is a free, open-source front end for [Squads V4](https://squads.so/protocol), the multisig program on Solana. It is a community fork of [Squads-Protocol/public-v4-client](https://github.com/Squads-Protocol/public-v4-client) with the subscription paywall and account limits removed — every feature is free ($0), with no account and no sign-up.
+**Squads Zero** is a free, open-source front end for [Squads V4](https://squads.so/protocol), the multisig program on Solana. It is a community fork of [Squads-Protocol/public-v4-client](https://github.com/Squads-Protocol/public-v4-client) — every feature is free ($0), with no account and no sign-up.
 
 It is a pure static site: there is no backend, no telemetry, and no analytics. Your wallet keys, your RPC settings, and your API keys never leave your browser. If you don't trust the deployment you're on, build it yourself and verify it against the published release hashes (see [Releases & build verification](#releases--build-verification)).
 
