@@ -38,9 +38,12 @@ export type TreasuryTotals = {
  */
 export const useTreasuryTotals = (): TreasuryTotals => {
   const { data: treasury, isLoading } = useTreasury();
-  const { data: jupPrices } = usePrices([SOL_MINT]);
-
   const vaults = treasury?.vaults ?? [];
+  // Jupiter fallback must cover every held mint, not just SOL — same inputs as
+  // the dashboard hero, otherwise tokens with no DAS price drop out of the total.
+  const allMints = vaults.flatMap((v) => (v.tokens ?? []).map((t) => t.mint));
+  const { data: jupPrices } = usePrices(allMints);
+
   const liquidSol = vaults.reduce((s, v) => s + v.lamports, 0) / LAMPORTS_PER_SOL;
   const stakedSol = vaults.reduce((s, v) => s + stakedLamports(v), 0) / LAMPORTS_PER_SOL;
   const tokensUsd = vaults.reduce(
