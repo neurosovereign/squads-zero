@@ -5,6 +5,15 @@
 
 * **lockfile:** updated lockfile ([c8e1b4a](https://github.com/Squads-Protocol/public-v4-client/commit/c8e1b4a3d209b7c1c3cfc4d9e7edb8e187e22833))
 
+## [1.5.1](https://github.com/neurosovereign/squads-zero/compare/v1.5.0...v1.5.1) (2026-09-17)
+
+
+### Bug Fixes
+
+* include Jupiter-priced tokens in sidebar totals ([179a6b6](https://github.com/neurosovereign/squads-zero/commit/179a6b69c0ef80468758d1986a924ad60aa4e0ee))
+* resolve package-lock.json packages from registry.npmjs.org ([145b5c2](https://github.com/neurosovereign/squads-zero/commit/145b5c23f2af080c2fffc12cf6957c2ffa0a134f))
+* resolve yarn.lock packages from registry.npmjs.org ([7d2ecc9](https://github.com/neurosovereign/squads-zero/commit/7d2ecc9d3c095b2d406f7cbab9ab395935693736))
+
 ## [1.4.1](https://github.com/Squads-Protocol/public-v4-client/compare/v1.4.0...v1.4.1) (2026-06-17)
 
 
